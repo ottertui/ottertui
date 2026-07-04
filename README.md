@@ -2,6 +2,12 @@
 
 A modern terminal user interface library for Java, inspired by [ratatui](https://github.com/ratatui/ratatui).
 
+[![Java](https://img.shields.io/badge/Java-21+-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Gradle](https://img.shields.io/badge/Gradle-8.10-02303A?logo=gradle&logoColor=white)](https://gradle.org/)
+[![JLine](https://img.shields.io/badge/JLine-3.28-4B8BBE)](https://github.com/jline/jline3)
+[![Lanterna](https://img.shields.io/badge/Lanterna-3.1-555555)](https://github.com/mabe02/lanterna)
+[![License](https://img.shields.io/badge/License-Apache--2.0-blue)](./LICENSE)
+
 ## Features
 
 - **Immediate-mode rendering** — widgets render to a `Buffer`, double-buffered to eliminate flicker
