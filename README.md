@@ -4,6 +4,7 @@
 [![Gradle](https://img.shields.io/badge/Gradle-8.10-02303A?logo=gradle&logoColor=white)](https://gradle.org/)
 [![JLine](https://img.shields.io/badge/JLine-3.28-4B8BBE)](https://github.com/jline/jline3)
 [![Lanterna](https://img.shields.io/badge/Lanterna-3.1-555555)](https://github.com/mabe02/lanterna)
+[![JUnit](https://img.shields.io/badge/JUnit-5.11-25A162?logo=junit5&logoColor=white)](https://junit.org/junit5/)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue)](./LICENSE)
 
 A modern terminal user interface library for Java, inspired by [ratatui](https://github.com/ratatui/ratatui).
@@ -34,11 +35,27 @@ ottertui/
 
 ## Quick Start
 
-### Build
+### Build & Test
 
 ```bash
-gradle build
+# Build all modules
+./gradlew build
+
+# Run all tests
+./gradlew test
+
+# Run tests with coverage report
+./gradlew test jacocoTestReport
 ```
+
+Coverage reports are generated per module at `build/reports/jacoco/test/html/index.html`.
+
+| Module | Line Coverage |
+|--------|--------------|
+| ottertui-core | 97% |
+| ottertui-widgets | 99% |
+| ottertui-tui | 90% |
+| ottertui-toolkit | 97% |
 
 ### Run the demo
 
