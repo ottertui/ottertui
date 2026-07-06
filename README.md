@@ -9,6 +9,8 @@
 
 A modern terminal user interface library for Java, inspired by [ratatui](https://github.com/ratatui/ratatui).
 
+**English** | [中文](docs/README.zh.md) | [日本語](docs/README.ja.md) | [한국어](docs/README.ko.md)
+
 ## Features
 
 - **Immediate-mode rendering** — widgets render to a `Buffer`, double-buffered to eliminate flicker
