@@ -86,16 +86,6 @@ public record Layout(Direction direction, List<Constraint> constraints, int gap)
             }
         }
 
-        // Distribute any leftover space (from integer division) to last non-zero size
-        if (remaining > 0) {
-            for (int i = sizes.size() - 1; i >= 0; i--) {
-                if (sizes.get(i) > 0) {
-                    sizes.set(i, sizes.get(i) + remaining);
-                    break;
-                }
-            }
-        }
-
         return sizes;
     }
 }
