@@ -1,0 +1,72 @@
+name: Release
+
+# Apache-style: manual trigger only, not automatic on tag push.
+# The release manager triggers this after a successful PMC vote.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version (e.g. 0.1.0)'
+        required: true
+      next_dev_version:
+        description: 'Next snapshot version (e.g. 0.2.0-SNAPSHOT)'
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # Apache projects use GitHub Environments to gate production releases
+    environment: release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set release version
+        run: |
+          ./gradlew -q properties | grep "^version:" || true
+          sed -i "s/version = .*/version = \"${{ inputs.release_version }}\"/" build.gradle.kts
+
+      - name: Build and verify
+        run: ./gradlew build checkstyleMain checkstyleTest
+
+      - name: Generate checksums and signatures
+        run: |
+          for f in $(find . -name "*.jar" -o -name "*.pom" | grep -v build); do
+            sha512sum "$f" > "$f.sha512"
+          done
+
+      - name: Publish to Maven Central (staging if supported)
+        run: ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_SIGNING_PASSWORD }}
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.release_version }}
+          name: v${{ inputs.release_version }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump to next snapshot
+        run: |
+          sed -i "s/version = .*/version = \"${{ inputs.next_dev_version }}\"/" build.gradle.kts
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add build.gradle.kts
+          git commit -m "chore: bump version to ${{ inputs.next_dev_version }}"
+          git push
