@@ -80,4 +80,18 @@ class CharWidthTest {
         assertEquals(2, CharWidth.displayWidth("Ａ"));
         assertEquals(4, CharWidth.displayWidth("ＡＢ"));
     }
+
+    @Test
+    @DisplayName("emoji with skin tone modifier skips the modifier")
+    void emojiWithSkinTone() {
+        // 👍 U+1F44D (emoji, width 2) + 🏽 U+1F3FD (skin tone modifier, skipped)
+        assertEquals(2, CharWidth.displayWidth("👍\uD83C\uDFFD"));
+    }
+
+    @Test
+    @DisplayName("emoji with ZWJ sequence")
+    void emojiZWJSequence() {
+        // ❤ U+2764 followed by ZWJ (U+200D) — triggers ZWJ sequence path
+        assertEquals(2, CharWidth.displayWidth("❤\u200D"));
+    }
 }

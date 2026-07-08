@@ -49,8 +49,4 @@ public class BarChartWidget implements Widget {
             buffer.setString(x, yBase, label, Style.DEFAULT);
         }
     }
-
-    private static String truncate(String s, int width) {
-        return s.length() > width ? s.substring(0, width) : s;
-    }
 }

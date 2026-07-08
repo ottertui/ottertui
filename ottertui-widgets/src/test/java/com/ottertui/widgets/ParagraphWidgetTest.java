@@ -108,4 +108,24 @@ class ParagraphWidgetTest {
         w.render(new Rect(0, 0, 0, 5), b);
         assertEquals(Cell.EMPTY, b.getCell(0, 0));
     }
+
+    @Test
+    @DisplayName("render wraps at exact space boundary")
+    void renderWrapsAtSpaceBoundary() {
+        ParagraphWidget w = new ParagraphWidget("Hello World");
+        Buffer b = new Buffer(6, 5);
+        w.render(new Rect(0, 0, 6, 5), b);
+        assertEquals('H', b.getCell(0, 0).ch());
+        assertEquals('W', b.getCell(0, 1).ch());
+    }
+
+    @Test
+    @DisplayName("render trims leading spaces after wrap")
+    void renderTrimsLeadingSpaces() {
+        ParagraphWidget w = new ParagraphWidget("Hello   World");
+        Buffer b = new Buffer(6, 5);
+        w.render(new Rect(0, 0, 6, 5), b);
+        assertEquals('H', b.getCell(0, 0).ch());
+        assertEquals('W', b.getCell(0, 1).ch());
+    }
 }

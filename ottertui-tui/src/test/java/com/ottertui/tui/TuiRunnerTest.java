@@ -171,4 +171,20 @@ class TuiRunnerTest {
         assertTrue(backend.flushed.get());
     }
 
+    @Test
+    @DisplayName("run skips render when backend size is zero")
+    void runSkipsRenderOnZeroSize() {
+        StubBackend backend = new StubBackend();
+        backend.size = new TerminalBackend.TerminalSize(0, 0);
+        backend.inputs.add(InputEvent.charKey('c', Set.of(Modifier.BOLD)));
+
+        Component root = new Component() {
+            @Override
+            public void render(Rect area, Buffer buffer) {}
+        };
+        TuiRunner runner = new TuiRunner(backend, root);
+        runner.run();
+        assertFalse(backend.flushed.get());
+    }
+
 }

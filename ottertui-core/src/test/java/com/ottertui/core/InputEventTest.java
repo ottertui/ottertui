@@ -82,4 +82,12 @@ class InputEventTest {
         assertEquals(10, me.col());
         assertTrue(me.pressed());
     }
+
+    @Test
+    @DisplayName("TerminalSize record")
+    void terminalSize() {
+        TerminalBackend.TerminalSize size = new TerminalBackend.TerminalSize(80, 24);
+        assertEquals(80, size.width());
+        assertEquals(24, size.height());
+    }
 }

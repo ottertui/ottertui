@@ -445,4 +445,18 @@ class TcssParserTest {
         Style s = sheet.resolve("x", "y", Set.of());
         assertEquals(Style.DEFAULT, s);
     }
+
+    @Test
+    @DisplayName("parse error: missing closing brace")
+    void missingClosingBrace() {
+        assertThrows(IllegalArgumentException.class, () ->
+            StyleSheet.fromString("Button { color: red; "));
+    }
+
+    @Test
+    @DisplayName("parse error: missing opening brace")
+    void missingOpeningBrace() {
+        assertThrows(IllegalArgumentException.class, () ->
+            StyleSheet.fromString("Button color: red; }"));
+    }
 }

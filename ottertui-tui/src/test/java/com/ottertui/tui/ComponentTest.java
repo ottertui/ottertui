@@ -313,4 +313,25 @@ class ComponentTest {
         assertEquals(1, parent.children().size());
         assertEquals(child2, parent.children().get(0));
     }
+
+    @Test
+    @DisplayName("base render delegates to children via super")
+    void baseRenderViaSuper() {
+        AtomicBoolean childRendered = new AtomicBoolean(false);
+        Component parent = new Component() {
+            @Override
+            public void render(Rect area, Buffer buffer) {
+                super.render(area, buffer);
+            }
+        };
+        Component child = new Component() {
+            @Override
+            public void render(Rect area, Buffer buffer) {
+                childRendered.set(true);
+            }
+        };
+        parent.addChild(child);
+        parent.render(new Rect(0, 0, 10, 10), new Buffer(10, 10));
+        assertTrue(childRendered.get());
+    }
 }
