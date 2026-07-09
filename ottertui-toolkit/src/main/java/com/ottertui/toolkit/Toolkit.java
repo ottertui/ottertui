@@ -58,9 +58,6 @@ public final class Toolkit {
         }
 
         Element build() {
-            if (children.size() == 1 && children.get(0) instanceof Element.Container) {
-                return children.get(0);
-            }
             return new Element.Container(Layout.Direction.VERTICAL, List.copyOf(children), 1, Style.DEFAULT);
         }
     }

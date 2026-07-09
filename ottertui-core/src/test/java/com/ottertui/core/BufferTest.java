@@ -46,6 +46,14 @@ class BufferTest {
     }
 
     @Test
+    @DisplayName("getCell with x in bounds but y out of bounds")
+    void getCellPartialOutOfBounds() {
+        Buffer b = new Buffer(5, 3);
+        assertEquals(Cell.EMPTY, b.getCell(2, -1));
+        assertEquals(Cell.EMPTY, b.getCell(2, 3));
+    }
+
+    @Test
     @DisplayName("setCell out of bounds does nothing")
     void setCellOutOfBounds() {
         Buffer b = new Buffer(5, 3);
@@ -53,6 +61,16 @@ class BufferTest {
         b.setCell(-1, 0, cell);
         b.setCell(5, 0, cell);
         assertEquals(Cell.EMPTY, b.getCell(0, 0));
+    }
+
+    @Test
+    @DisplayName("setCell with y out of bounds does nothing")
+    void setCellYOutOfBounds() {
+        Buffer b = new Buffer(5, 3);
+        b.setCell(2, -1, new Cell('X', Style.DEFAULT));
+        b.setCell(2, 3, new Cell('X', Style.DEFAULT));
+        assertEquals(Cell.EMPTY, b.getCell(2, 0));
+        assertEquals(Cell.EMPTY, b.getCell(2, 2));
     }
 
     @Test
@@ -77,6 +95,16 @@ class BufferTest {
         assertEquals('H', b.getCell(0, 0).ch());
         assertEquals('o', b.getCell(4, 0).ch());
         assertEquals(Cell.EMPTY, b.getCell(0, 1));
+    }
+
+    @Test
+    @DisplayName("setString with supplementary Unicode character becomes ?")
+    void setStringSupplementaryUnicode() {
+        Buffer b = new Buffer(10, 3);
+        // U+1F600 (😀) is a supplementary character (> U+FFFF), encoded as 2 chars
+        // The buffer stores '?' for multi-char codepoints
+        b.setString(0, 0, "😀", Style.DEFAULT);
+        assertEquals('?', b.getCell(0, 0).ch());
     }
 
     @Test
@@ -132,6 +160,28 @@ class BufferTest {
     }
 
     @Test
+    @DisplayName("fill with negative x clips to 0")
+    void fillNegativeX() {
+        Buffer b = new Buffer(10, 5);
+        Cell cell = new Cell('X', Style.DEFAULT);
+        b.fill(new Rect(-2, 0, 5, 2), cell);
+        assertEquals('X', b.getCell(0, 0).ch());
+        assertEquals('X', b.getCell(2, 0).ch());
+        assertEquals('X', b.getCell(0, 1).ch());
+    }
+
+    @Test
+    @DisplayName("fill with negative y clips to 0")
+    void fillNegativeY() {
+        Buffer b = new Buffer(10, 5);
+        Cell cell = new Cell('X', Style.DEFAULT);
+        b.fill(new Rect(0, -2, 3, 5), cell);
+        assertEquals('X', b.getCell(0, 0).ch());
+        assertEquals('X', b.getCell(2, 0).ch());
+        assertEquals('X', b.getCell(0, 2).ch());
+    }
+
+    @Test
     @DisplayName("region returns BufferView with correct offset")
     void regionReturnsView() {
         Buffer b = new Buffer(10, 10);
@@ -152,6 +202,17 @@ class BufferTest {
         Cell cell = new Cell('Z', Style.DEFAULT);
         view.setCell(0, 0, cell);
         assertEquals('Z', b.getCell(2, 1).ch());
+    }
+
+    @Test
+    @DisplayName("region view getCell out of bounds returns EMPTY")
+    void regionViewGetCellOutOfBounds() {
+        Buffer b = new Buffer(10, 10);
+        Buffer view = b.region(new Rect(2, 1, 5, 5));
+        assertEquals(Cell.EMPTY, view.getCell(-1, 0));
+        assertEquals(Cell.EMPTY, view.getCell(5, 0));
+        assertEquals(Cell.EMPTY, view.getCell(0, -1));
+        assertEquals(Cell.EMPTY, view.getCell(0, 5));
     }
 
     @Test

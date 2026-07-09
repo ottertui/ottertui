@@ -96,10 +96,6 @@ public class StyleSheet {
         return new Style(result.foreground(), result.background(), mods);
     }
 
-    private static Style mergeStyles(Style base, Style over) {
-        return mergeStyles(base, over, 0);
-    }
-
     private static Style applyDeclaration(Style style, String property, String value) {
         return switch (property) {
             case "color"        -> style.fg(parseColor(value));

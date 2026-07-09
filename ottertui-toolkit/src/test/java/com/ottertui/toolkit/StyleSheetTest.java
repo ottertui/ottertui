@@ -187,4 +187,40 @@ class StyleSheetTest {
         Style result = sheet.resolve("x", "y", Set.of());
         assertEquals(new Color.Rgb(0xAB, 0xCD, 0xEF), result.background());
     }
+
+    @Test
+    @DisplayName("parseColor returns RESET for invalid 7-char hex")
+    void parseColorInvalidHex7() {
+        StyleSheet sheet = new StyleSheet();
+        sheet.addRule(Selector.universal(), Map.of("color", "#GGGGGG"));
+        Style result = sheet.resolve("x", "y", Set.of());
+        assertEquals(Color.RESET, result.foreground());
+    }
+
+    @Test
+    @DisplayName("parseColor returns RESET for invalid short hex")
+    void parseColorInvalidShortHex() {
+        StyleSheet sheet = new StyleSheet();
+        sheet.addRule(Selector.universal(), Map.of("color", "#GGG"));
+        Style result = sheet.resolve("x", "y", Set.of());
+        assertEquals(Color.RESET, result.foreground());
+    }
+
+    @Test
+    @DisplayName("parseColor handles rgb() format")
+    void parseColorRgb() {
+        StyleSheet sheet = new StyleSheet();
+        sheet.addRule(Selector.universal(), Map.of("color", "rgb(255, 128, 0)"));
+        Style result = sheet.resolve("x", "y", Set.of());
+        assertEquals(new Color.Rgb(255, 128, 0), result.foreground());
+    }
+
+    @Test
+    @DisplayName("parseColor returns RESET for invalid rgb()")
+    void parseColorInvalidRgb() {
+        StyleSheet sheet = new StyleSheet();
+        sheet.addRule(Selector.universal(), Map.of("color", "rgb(x, y, z)"));
+        Style result = sheet.resolve("x", "y", Set.of());
+        assertEquals(Color.RESET, result.foreground());
+    }
 }

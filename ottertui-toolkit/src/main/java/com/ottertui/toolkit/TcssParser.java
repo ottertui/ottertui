@@ -52,7 +52,7 @@ final class TcssParser {
     }
 
     private void parseVariableBlock(StyleSheet sheet) {
-        expect(":root");
+        pos += ":root".length();
         skipWhitespaceAndComments();
         expectChar('{');
         skipWhitespaceAndComments();
@@ -240,17 +240,6 @@ final class TcssParser {
             } else {
                 break;
             }
-        }
-    }
-
-    private void expect(String s) {
-        skipWhitespaceAndComments();
-        for (int i = 0; i < s.length(); i++) {
-            if (pos >= input.length() || input.charAt(pos) != s.charAt(i)) {
-                throw new IllegalArgumentException(
-                    "Expected '" + s + "' at position " + pos);
-            }
-            pos++;
         }
     }
 

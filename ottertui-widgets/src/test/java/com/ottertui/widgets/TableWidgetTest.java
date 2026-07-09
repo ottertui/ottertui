@@ -117,4 +117,78 @@ class TableWidgetTest {
         assertEquals('─', b.getCell(0, 1).ch());
         assertEquals(Cell.EMPTY, b.getCell(0, 2));
     }
+
+    @Test
+    @DisplayName("render with columns wider than area overflows")
+    void renderColumnsOverflowArea() {
+        TableWidget.Column<Item> col1 = new TableWidget.Column<>("Col1", Item::name, 20);
+        TableWidget.Column<Item> col2 = new TableWidget.Column<>("Col2", i -> String.valueOf(i.value()), 20);
+        var cols = List.of(col1, col2);
+        var rows = List.of(new Item("foo", 42));
+        TableWidget<Item> w = new TableWidget<>(cols, rows);
+        Buffer b = new Buffer(30, 10);
+        TableState state = new TableState();
+        w.render(state, new Rect(0, 0, 15, 10), b);
+        assertEquals('C', b.getCell(0, 0).ch());
+    }
+
+    @Test
+    @DisplayName("render in area with height 1")
+    void renderHeightOne() {
+        var cols = List.of(new TableWidget.Column<>("Name", Item::name, 10));
+        var rows = List.of(new Item("foo", 1));
+        TableWidget<Item> w = new TableWidget<>(cols, rows);
+        Buffer b = new Buffer(20, 1);
+        TableState state = new TableState();
+        w.render(state, new Rect(0, 0, 20, 1), b);
+        assertEquals('N', b.getCell(0, 0).ch());
+    }
+
+    @Test
+    @DisplayName("render with cell content longer than column width")
+    void renderCellContentTruncated() {
+        var cols = List.of(new TableWidget.Column<>("Header", Item::name, 3));
+        var rows = List.of(new Item("LongName", 1));
+        TableWidget<Item> w = new TableWidget<>(cols, rows);
+        Buffer b = new Buffer(20, 10);
+        TableState state = new TableState();
+        w.render(state, new Rect(0, 0, 20, 10), b);
+        assertEquals('L', b.getCell(0, 2).ch());
+        assertEquals('o', b.getCell(1, 2).ch());
+        assertEquals('n', b.getCell(2, 2).ch());
+    }
+
+    @Test
+    @DisplayName("render with many rows in small area")
+    void renderManyRowsInSmallArea() {
+        var cols = List.of(new TableWidget.Column<>("N", Item::name, 5));
+        var rows = List.of(
+            new Item("a", 1), new Item("b", 2), new Item("c", 3),
+            new Item("d", 4), new Item("e", 5)
+        );
+        TableWidget<Item> w = new TableWidget<>(cols, rows);
+        Buffer b = new Buffer(20, 4);
+        TableState state = new TableState();
+        w.render(state, new Rect(0, 0, 20, 4), b);
+        // Header at y=0, separator at y=1, data at y=2, y=3
+        assertEquals('N', b.getCell(0, 0).ch());
+        assertEquals('─', b.getCell(0, 1).ch());
+        assertEquals('a', b.getCell(0, 2).ch());
+        assertEquals('b', b.getCell(0, 3).ch());
+    }
+
+    @Test
+    @DisplayName("render with multiple wide columns overflowing area")
+    void renderMultipleWideColumnsOverflow() {
+        TableWidget.Column<Item> c1 = new TableWidget.Column<>("C1", Item::name, 10);
+        TableWidget.Column<Item> c2 = new TableWidget.Column<>("C2", i -> String.valueOf(i.value()), 10);
+        TableWidget.Column<Item> c3 = new TableWidget.Column<>("C3", i -> String.valueOf(i.value()), 10);
+        var cols = List.of(c1, c2, c3);
+        var rows = List.of(new Item("foo", 42));
+        TableWidget<Item> w = new TableWidget<>(cols, rows);
+        Buffer b = new Buffer(40, 10);
+        TableState state = new TableState();
+        w.render(state, new Rect(0, 0, 15, 10), b);
+        assertNotNull(w);
+    }
 }

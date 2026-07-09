@@ -94,4 +94,33 @@ class CharWidthTest {
         // ❤ U+2764 followed by ZWJ (U+200D) — triggers ZWJ sequence path
         assertEquals(2, CharWidth.displayWidth("❤\u200D"));
     }
+
+    @Test
+    @DisplayName("C1 control characters have width 0")
+    void c1ControlCharsWidth0() {
+        assertEquals(0, CharWidth.displayWidth("\u007F"));
+        assertEquals(0, CharWidth.displayWidth("\u009F"));
+    }
+
+    @Test
+    @DisplayName("Hangul Jamo in explicit range has width 2")
+    void hangulJamoWidth2() {
+        // U+1100 (Hangul Choseong) is in 0x1100-0x115F range
+        assertEquals(2, CharWidth.displayWidth("\u1100"));
+        assertEquals(2, CharWidth.displayWidth("\u115F"));
+    }
+
+    @Test
+    @DisplayName("emoji followed by non-modifier is handled")
+    void emojiFollowedByNonModifier() {
+        // U+1F44D (👍) is ZWJ-sequence emoji, 'A' is not a modifier
+        assertEquals(3, CharWidth.displayWidth("👍A"));
+    }
+
+    @Test
+    @DisplayName("ZWJ modifier character has width 1 when standalone")
+    void zwjStandaloneWidth() {
+        // U+200D alone has width 1 (not EastAsianWide, not control)
+        assertEquals(1, CharWidth.displayWidth("\u200D"));
+    }
 }

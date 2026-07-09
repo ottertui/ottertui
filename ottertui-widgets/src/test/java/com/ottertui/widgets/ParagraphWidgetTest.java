@@ -128,4 +128,54 @@ class ParagraphWidgetTest {
         assertEquals('H', b.getCell(0, 0).ch());
         assertEquals('W', b.getCell(0, 1).ch());
     }
+
+    @Test
+    @DisplayName("render with CENTER alignment")
+    void renderCenterAlignment() {
+        ParagraphWidget w = new ParagraphWidget("Hi", Style.DEFAULT, Alignment.CENTER, false);
+        Buffer b = new Buffer(10, 5);
+        w.render(new Rect(0, 0, 10, 5), b);
+        assertEquals('H', b.getCell(4, 0).ch());
+        assertEquals('i', b.getCell(5, 0).ch());
+    }
+
+    @Test
+    @DisplayName("render with RIGHT alignment")
+    void renderRightAlignment() {
+        ParagraphWidget w = new ParagraphWidget("Hi", Style.DEFAULT, Alignment.RIGHT, false);
+        Buffer b = new Buffer(10, 5);
+        w.render(new Rect(0, 0, 10, 5), b);
+        assertEquals('H', b.getCell(8, 0).ch());
+        assertEquals('i', b.getCell(9, 0).ch());
+    }
+
+    @Test
+    @DisplayName("render CENTER alignment with wrap")
+    void renderCenterAlignmentWithWrap() {
+        ParagraphWidget w = new ParagraphWidget("Hi", Style.DEFAULT, Alignment.CENTER, true);
+        Buffer b = new Buffer(10, 5);
+        w.render(new Rect(0, 0, 10, 5), b);
+        assertEquals('H', b.getCell(4, 0).ch());
+        assertEquals('i', b.getCell(5, 0).ch());
+    }
+
+    @Test
+    @DisplayName("render RIGHT alignment with wrap")
+    void renderRightAlignmentWithWrap() {
+        ParagraphWidget w = new ParagraphWidget("Hi", Style.DEFAULT, Alignment.RIGHT, true);
+        Buffer b = new Buffer(10, 5);
+        w.render(new Rect(0, 0, 10, 5), b);
+        assertEquals('H', b.getCell(8, 0).ch());
+        assertEquals('i', b.getCell(9, 0).ch());
+    }
+
+    @Test
+    @DisplayName("render unwrapped text truncation")
+    void renderUnwrappedTruncation() {
+        ParagraphWidget w = new ParagraphWidget("Hello World", Style.DEFAULT, Alignment.LEFT, false);
+        Buffer b = new Buffer(5, 5);
+        w.render(new Rect(0, 0, 5, 5), b);
+        assertEquals('H', b.getCell(0, 0).ch());
+        assertEquals('o', b.getCell(4, 0).ch());
+    }
 }
