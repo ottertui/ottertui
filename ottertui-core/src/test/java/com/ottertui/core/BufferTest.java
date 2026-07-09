@@ -223,4 +223,35 @@ class BufferTest {
         assertEquals(0, b.height());
         assertEquals(Cell.EMPTY, b.getCell(0, 0));
     }
+
+    @Test
+    @DisplayName("writeRaw writes control characters without filtering")
+    void writeRawControlChars() {
+        Buffer b = new Buffer(20, 5);
+        b.writeRaw(0, 0, "\033_Gf=24,a=T;data\033\\", Style.DEFAULT);
+        // ESC (0x1B) should be written, not filtered
+        assertEquals('\033', b.getCell(0, 0).ch());
+        assertEquals('_', b.getCell(1, 0).ch());
+        assertEquals('G', b.getCell(2, 0).ch());
+        assertEquals('T', b.getCell(10, 0).ch());
+        assertEquals('d', b.getCell(12, 0).ch());
+    }
+
+    @Test
+    @DisplayName("writeRaw clips at buffer width")
+    void writeRawClipsAtWidth() {
+        Buffer b = new Buffer(5, 3);
+        b.writeRaw(0, 0, "HelloWorld", Style.DEFAULT);
+        assertEquals('H', b.getCell(0, 0).ch());
+        assertEquals('o', b.getCell(4, 0).ch());
+    }
+
+    @Test
+    @DisplayName("writeRaw handles supplementary Unicode")
+    void writeRawSupplementaryUnicode() {
+        Buffer b = new Buffer(10, 3);
+        b.writeRaw(0, 0, "😀test", Style.DEFAULT);
+        assertEquals('?', b.getCell(0, 0).ch());
+        assertEquals('t', b.getCell(1, 0).ch());
+    }
 }

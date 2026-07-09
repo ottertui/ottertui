@@ -51,6 +51,32 @@ class BackendSelectorTest {
     }
 
     @Test
+    @DisplayName("create with aesh property set prefers aesh backend")
+    void createWithAeshProperty() {
+        System.setProperty("ottertui.backend", "aesh");
+        try {
+            TerminalBackend backend = BackendSelector.create();
+            assertNotNull(backend);
+            assertTrue(backend.getClass().getName().contains("Aesh"));
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains("Aesh"));
+        }
+    }
+
+    @Test
+    @DisplayName("create with ffm property set prefers ffm backend")
+    void createWithFfmProperty() {
+        System.setProperty("ottertui.backend", "ffm");
+        try {
+            TerminalBackend backend = BackendSelector.create();
+            assertNotNull(backend);
+            assertTrue(backend.getClass().getName().contains("Ffm"));
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains("FFM"));
+        }
+    }
+
+    @Test
     @DisplayName("create with unknown backend falls through to lanterna")
     void createWithUnknownBackend() {
         System.setProperty("ottertui.backend", "unknown");

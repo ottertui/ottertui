@@ -187,4 +187,117 @@ class TuiRunnerTest {
         assertFalse(backend.flushed.get());
     }
 
+    @Test
+    @DisplayName("unbound events are dispatched to root.onEvent")
+    void unboundEventDispatchedToRoot() {
+        StubBackend backend = new StubBackend();
+        AtomicBoolean eventReceived = new AtomicBoolean(false);
+        // Send an unbound event first, then stop
+        backend.inputs.add(InputEvent.charKey('x')); // no binding for 'x' without BOLD
+        backend.inputs.add(InputEvent.charKey('c', Set.of(Modifier.BOLD)));
+
+        Component root = new Component() {
+            @Override
+            public void render(Rect area, Buffer buffer) {}
+            @Override
+            public boolean onEvent(InputEvent event) {
+                eventReceived.set(true);
+                return false;
+            }
+        };
+        TuiRunner runner = new TuiRunner(backend, root);
+        runner.run();
+        assertTrue(eventReceived.get(), "Unbound event should reach root.onEvent()");
+    }
+
+    @Test
+    @DisplayName("unknown event is dispatched to root.onEvent")
+    void unknownEventDispatchedToRoot() {
+        StubBackend backend = new StubBackend();
+        AtomicBoolean eventReceived = new AtomicBoolean(false);
+        backend.inputs.add(new InputEvent.Unknown());
+        backend.inputs.add(InputEvent.charKey('c', Set.of(Modifier.BOLD)));
+
+        Component root = new Component() {
+            @Override
+            public void render(Rect area, Buffer buffer) {}
+            @Override
+            public boolean onEvent(InputEvent event) {
+                eventReceived.set(true);
+                return false;
+            }
+        };
+        TuiRunner runner = new TuiRunner(backend, root);
+        runner.run();
+        assertTrue(eventReceived.get(), "Unknown event should reach root.onEvent()");
+    }
+
+    @Test
+    @DisplayName("run stops when all events processed and backend returns empty")
+    void runProcessesAllEvents() {
+        StubBackend backend = new StubBackend();
+        AtomicInteger eventCount = new AtomicInteger(0);
+        backend.inputs.add(InputEvent.charKey('a'));
+        backend.inputs.add(InputEvent.charKey('b'));
+        backend.inputs.add(InputEvent.charKey('c', Set.of(Modifier.BOLD)));
+
+        Component root = new Component() {
+            @Override
+            public void render(Rect area, Buffer buffer) {}
+            @Override
+            public boolean onEvent(InputEvent event) {
+                eventCount.incrementAndGet();
+                return false;
+            }
+        };
+        TuiRunner runner = new TuiRunner(backend, root);
+        runner.run();
+        assertEquals(2, eventCount.get(), "2 unbound events should be dispatched to root");
+    }
+
+    @Test
+    @DisplayName("drainInput correctly batches multiple events")
+    void drainInputBatches() {
+        StubBackend backend = new StubBackend();
+        backend.inputs.add(InputEvent.charKey('a'));
+        backend.inputs.add(InputEvent.charKey('b'));
+        backend.inputs.add(InputEvent.charKey('c', Set.of(Modifier.BOLD)));
+
+        AtomicInteger eventCount = new AtomicInteger(0);
+        Component root = new Component() {
+            @Override
+            public void render(Rect area, Buffer buffer) {}
+            @Override
+            public boolean onEvent(InputEvent event) {
+                eventCount.incrementAndGet();
+                return false;
+            }
+        };
+        TuiRunner runner = new TuiRunner(backend, root);
+        runner.run();
+        assertTrue(eventCount.get() >= 2);
+    }
+
+    @Test
+    @DisplayName("resize event dispatched to root")
+    void resizeEventDispatched() {
+        StubBackend backend = new StubBackend();
+        AtomicBoolean resized = new AtomicBoolean(false);
+        backend.inputs.add(new InputEvent.Resize(100, 40));
+        backend.inputs.add(InputEvent.charKey('c', Set.of(Modifier.BOLD)));
+
+        Component root = new Component() {
+            @Override
+            public void render(Rect area, Buffer buffer) {}
+            @Override
+            public boolean onEvent(InputEvent event) {
+                if (event instanceof InputEvent.Resize) resized.set(true);
+                return false;
+            }
+        };
+        TuiRunner runner = new TuiRunner(backend, root);
+        runner.run();
+        assertTrue(resized.get());
+    }
+
 }

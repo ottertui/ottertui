@@ -58,6 +58,31 @@ public class Buffer {
         }
     }
 
+    /**
+     * Write a string including control characters (ESC, etc.) without
+     * width filtering. Used for terminal escape sequences.
+     */
+    public void writeRaw(int x, int y, String text, Style style) {
+        int displayX = x;
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            if (Character.isHighSurrogate(ch) && i + 1 < text.length()) {
+                // Supplementary character — store as '?'
+                if (displayX >= 0 && displayX < width) {
+                    cells[y][displayX] = new Cell('?', style);
+                }
+                i++; // skip low surrogate
+                displayX++;
+            } else {
+                if (displayX >= 0 && displayX < width) {
+                    cells[y][displayX] = new Cell(ch, style);
+                }
+                displayX++;
+            }
+            if (displayX >= width) break;
+        }
+    }
+
     public Buffer region(Rect area) {
         return new BufferView(this, area);
     }
