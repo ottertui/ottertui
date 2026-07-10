@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     id("maven-publish")
+    id("signing")
     id("jacoco")
     id("checkstyle")
 }
@@ -18,6 +19,7 @@ allprojects {
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "maven-publish")
+    apply(plugin = "signing")
     apply(plugin = "jacoco")
     apply(plugin = "checkstyle")
 
@@ -79,8 +81,38 @@ subprojects {
                             url = "https://opensource.org/licenses/MIT"
                         }
                     }
+                    scm {
+                        url = "https://github.com/ottertui/ottertui"
+                        connection = "scm:git:https://github.com/ottertui/ottertui.git"
+                    }
+                    developers {
+                        developer {
+                            id = "ottertui"
+                            name = "OtterTUI contributors"
+                        }
+                    }
                 }
             }
+        }
+
+        repositories {
+            maven {
+                name = "CentralPortal"
+                url = uri("https://central.sonatype.com/api/v1/publisher")
+                credentials {
+                    username = findProperty("sonatypeUsername") as String? ?: ""
+                    password = findProperty("sonatypePassword") as String? ?: ""
+                }
+            }
+        }
+    }
+
+    signing {
+        val signingKey = findProperty("signingKey") as String? ?: ""
+        val signingPassword = findProperty("signingPassword") as String? ?: ""
+        if (signingKey.isNotEmpty()) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign(publishing.publications["maven"])
         }
     }
 }
