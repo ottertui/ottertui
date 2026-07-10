@@ -10,8 +10,8 @@ allprojects {
     version = "0.1.0"
 
     repositories {
-        maven { url = uri("https://maven.aliyun.com/repository/central") }
         mavenCentral()
+        maven { url = uri("https://maven.aliyun.com/repository/central") }
     }
 }
 
@@ -90,9 +90,9 @@ tasks.register("installGitHook") {
     group = "setup"
     doLast {
         val hooksDir = rootProject.file(".githooks").absolutePath
-        exec {
-            commandLine("git", "config", "core.hooksPath", hooksDir)
-        }
+        val pb = ProcessBuilder("git", "config", "core.hooksPath", hooksDir)
+            .inheritIO()
+        pb.start().waitFor()
         println("Git hooks installed from: $hooksDir")
     }
 }
