@@ -6,7 +6,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.ottertui"
+    group = "io.github.ottertui"
     version = "0.1.0"
 
     repositories {
