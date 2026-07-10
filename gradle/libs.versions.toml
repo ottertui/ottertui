@@ -3,7 +3,7 @@ jline = "4.3.1"
 lanterna = "3.1.5"
 aesh = "2.6"
 jansi = "2.4.3"
-junit = "5.11.4"
+junit = "6.1.1"
 logback = "1.5.38"
 
 [libraries]
@@ -15,3 +15,4 @@ jansi = { module = "org.fusesource.jansi:jansi", version.ref = "jansi" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
