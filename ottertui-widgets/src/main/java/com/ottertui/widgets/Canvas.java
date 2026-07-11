@@ -97,39 +97,13 @@ public class Canvas implements Widget {
 
     @Override
     public void render(Rect area, Buffer buffer) {
-        int cellsWide = (width + 1) / 2;
-        int cellsHigh = (height + 3) / 4;
+        int cellsWide = Math.min((width + 1) / 2, area.width());
+        int cellsHigh = Math.min((height + 3) / 4, area.height());
 
-        for (int cy = 0; cy < cellsHigh && cy < area.height(); cy++) {
-            int baseDy = BrailleUtils.cellToDotY(cy);
-            for (int cx = 0; cx < cellsWide && cx < area.width(); cx++) {
-                int baseDx = BrailleUtils.cellToDotX(cx);
-
-                boolean[] braDots = new boolean[8];
-                Color cellColor = null;
-
-                for (int dotRow = 0; dotRow < 4; dotRow++) {
-                    int dy = baseDy + dotRow;
-                    for (int dotCol = 0; dotCol < 2; dotCol++) {
-                        int dx = baseDx + dotCol;
-                        Color dot = painter.getDot(dx, dy);
-                        if (dot != null) {
-                            int bitIdx = dotRow * 2 + dotCol;
-                            braDots[bitIdx] = true;
-                            if (cellColor == null) {
-                                cellColor = dot;
-                            }
-                        }
-                    }
-                }
-
-                if (cellColor != null) {
-                    char braille = BrailleUtils.toBrailleChar(braDots);
-                    buffer.setCell(area.x() + cx, area.y() + cy,
-                        new Cell(braille, new Style(cellColor, Color.RESET,
-                            java.util.Set.of())));
-                }
-            }
-        }
+        BrailleUtils.renderBrailleCells(buffer, area.x(), area.y(),
+            cellsWide, cellsHigh, (dx, dy) -> {
+                Color c = painter.getDot(dx, dy);
+                return c != null ? new Style(c, Color.RESET, java.util.Set.of()) : null;
+            });
     }
 }

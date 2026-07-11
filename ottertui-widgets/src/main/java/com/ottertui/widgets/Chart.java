@@ -88,39 +88,16 @@ public class Chart implements Widget {
             dotGrids.add(dots);
         }
 
-        // Render Braille cells
-        for (int cy = 0; cy < plotH; cy++) {
-            int baseDy = BrailleUtils.cellToDotY(cy);
-            for (int cx = 0; cx < plotW; cx++) {
-                int baseDx = BrailleUtils.cellToDotX(cx);
-
-                boolean[] braDots = new boolean[8];
-                Style cellStyle = Style.DEFAULT;
-                boolean anySet = false;
-
-                for (int dsIdx = 0; dsIdx < dotGrids.size(); dsIdx++) {
-                    boolean[][] grid = dotGrids.get(dsIdx);
-                    for (int dotRow = 0; dotRow < 4; dotRow++) {
-                        int dy = baseDy + dotRow;
-                        for (int dotCol = 0; dotCol < 2; dotCol++) {
-                            int dx = baseDx + dotCol;
-                            if (dy < dotHeight && dx < dotWidth && grid[dy][dx]) {
-                                int bitIdx = dotRow * 2 + dotCol;
-                                braDots[bitIdx] = true;
-                                anySet = true;
-                                cellStyle = datasets.get(dsIdx).style();
-                            }
-                        }
+        BrailleUtils.renderBrailleCells(buffer, plotX, plotY, plotW, plotH,
+            (dx, dy) -> {
+                if (dy < 0 || dx < 0 || dy >= dotHeight || dx >= dotWidth) return null;
+                for (int dsIdx = dotGrids.size() - 1; dsIdx >= 0; dsIdx--) {
+                    if (dotGrids.get(dsIdx)[dy][dx]) {
+                        return datasets.get(dsIdx).style();
                     }
                 }
-
-                if (anySet) {
-                    char braille = BrailleUtils.toBrailleChar(braDots);
-                    buffer.setCell(plotX + cx, plotY + cy,
-                        new Cell(braille, cellStyle));
-                }
-            }
-        }
+                return null;
+            });
     }
 
     private static double[] computeBounds(List<Dataset> datasets) {

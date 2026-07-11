@@ -65,13 +65,13 @@ public class JLineBackend implements TerminalBackend {
             if (!rowChanged) continue;
 
             // Write the entire row from column 1
-            sb.append(cursorTo(y + 1, 1));
+            sb.append(AnsiUtil.cursorTo(y + 1, 1));
             var prevStyle = Style.DEFAULT;
 
             for (int x = 0; x < buffer.width(); x++) {
                 Cell cell = buffer.getCell(x, y);
                 if (!cell.style().equals(prevStyle)) {
-                    sb.append(styleToSgr(cell.style()));
+                    sb.append(AnsiUtil.styleToSgr(cell.style()));
                     prevStyle = cell.style();
                 }
                 sb.append(cell.ch());
@@ -82,11 +82,11 @@ public class JLineBackend implements TerminalBackend {
 
         // Write raw content (escape sequences) directly
         for (var raw : buffer.rawContent()) {
-            sb.append(cursorTo(raw.y() + 1, raw.x() + 1));
+            sb.append(AnsiUtil.cursorTo(raw.y() + 1, raw.x() + 1));
             sb.append(raw.text());
         }
 
-        sb.append(Reset);
+        sb.append("\033[0m");
         output.write(sb.toString());
         output.flush();
     }
@@ -127,35 +127,6 @@ public class JLineBackend implements TerminalBackend {
     public void clearScreen() {
         output.write("\033[2J");
         output.flush();
-    }
-
-    // -- private helpers --
-
-    private static final String Reset = "\033[0m";
-
-    private String cursorTo(int row, int col) {
-        return "\033[" + row + ";" + col + "H";
-    }
-
-    private String styleToSgr(Style style) {
-        var sb = new StringBuilder();
-        sb.append("\033[0");
-
-        if (style.foreground() instanceof Color.Rgb rgb) {
-            sb.append(";38;2;").append(rgb.r()).append(";").append(rgb.g()).append(";").append(rgb.b());
-        }
-        if (style.background() instanceof Color.Rgb rgb) {
-            sb.append(";48;2;").append(rgb.r()).append(";").append(rgb.g()).append(";").append(rgb.b());
-        }
-        if (style.modifiers().contains(Modifier.BOLD))       sb.append(";1");
-        if (style.modifiers().contains(Modifier.DIM))         sb.append(";2");
-        if (style.modifiers().contains(Modifier.ITALIC))      sb.append(";3");
-        if (style.modifiers().contains(Modifier.UNDERLINE))   sb.append(";4");
-        if (style.modifiers().contains(Modifier.REVERSED))    sb.append(";7");
-        if (style.modifiers().contains(Modifier.CROSSED_OUT)) sb.append(";9");
-
-        sb.append("m");
-        return sb.toString();
     }
 
     private InputEvent decodeKey(int ch) {
