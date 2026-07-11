@@ -117,8 +117,8 @@ public class FfmBackend implements TerminalBackend {
                     }
                 }
 
-                sb.append(CSI).append(y + 1).append(';').append(x + 1).append('H');
-                sb.append(styleToSgr(cell.style()));
+                sb.append(AnsiUtil.cursorTo(y + 1, x + 1));
+                sb.append(AnsiUtil.styleToSgr(cell.style()));
                 sb.append(cell.ch());
             }
         }
@@ -219,71 +219,6 @@ public class FfmBackend implements TerminalBackend {
         } catch (IOException e) {
             // ignore
         }
-    }
-
-    private String styleToSgr(Style style) {
-        var sb = new StringBuilder(CSI);
-        boolean needsM = false;
-
-        // Foreground
-        String fg = colorToAnsiFg(style.foreground());
-        if (!fg.isEmpty()) {
-            sb.append(fg);
-            needsM = true;
-        }
-        if (needsM) { sb.append('m').append(CSI); needsM = false; }
-
-        // Background
-        String bg = colorToAnsiBg(style.background());
-        if (!bg.isEmpty()) {
-            sb.append(bg);
-            needsM = true;
-        }
-        if (needsM) { sb.append('m').append(CSI); needsM = false; }
-
-        // Modifiers
-        if (style.modifiers().contains(Modifier.BOLD))       { sb.append("1;"); needsM = true; }
-        if (style.modifiers().contains(Modifier.ITALIC))     { sb.append("3;"); needsM = true; }
-        if (style.modifiers().contains(Modifier.UNDERLINE))  { sb.append("4;"); needsM = true; }
-        if (style.modifiers().contains(Modifier.REVERSED))   { sb.append("7;"); needsM = true; }
-        if (style.modifiers().contains(Modifier.CROSSED_OUT)) { sb.append("9;"); needsM = true; }
-
-        if (needsM) {
-            if (sb.charAt(sb.length() - 1) == ';') {
-                sb.setCharAt(sb.length() - 1, 'm');
-            }
-        }
-        return sb.toString();
-    }
-
-    private static String colorToAnsiFg(Color c) {
-        if (c instanceof Color.Rgb r) return "38;2;" + r.r() + ";" + r.g() + ";" + r.b();
-        if (c == Color.RESET) return "39";
-        if (c == Color.BLACK)   return "30";
-        if (c == Color.RED)     return "31";
-        if (c == Color.GREEN)   return "32";
-        if (c == Color.YELLOW)  return "33";
-        if (c == Color.BLUE)    return "34";
-        if (c == Color.MAGENTA) return "35";
-        if (c == Color.CYAN)    return "36";
-        if (c == Color.WHITE)   return "37";
-        if (c == Color.GRAY)    return "90";
-        return "";
-    }
-
-    private static String colorToAnsiBg(Color c) {
-        if (c instanceof Color.Rgb r) return "48;2;" + r.r() + ";" + r.g() + ";" + r.b();
-        if (c == Color.RESET) return "49";
-        if (c == Color.BLACK)   return "40";
-        if (c == Color.RED)     return "41";
-        if (c == Color.GREEN)   return "42";
-        if (c == Color.YELLOW)  return "43";
-        if (c == Color.BLUE)    return "44";
-        if (c == Color.MAGENTA) return "45";
-        if (c == Color.CYAN)    return "46";
-        if (c == Color.WHITE)   return "47";
-        if (c == Color.GRAY)    return "100";
-        return "";
     }
 
     private TerminalSize fallbackSize() {
