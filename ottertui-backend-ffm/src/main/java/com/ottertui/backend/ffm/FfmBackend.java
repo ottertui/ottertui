@@ -201,7 +201,7 @@ public class FfmBackend implements TerminalBackend {
         try {
             byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
             try (var arena = Arena.ofConfined()) {
-                var seg = arena.allocateFrom(JAVA_BYTE, bytes);
+                var seg = MemorySegment.ofArray(bytes);
                 writeHandle.invokeExact(STDOUT, seg, (long) bytes.length);
             }
         } catch (Throwable e) {

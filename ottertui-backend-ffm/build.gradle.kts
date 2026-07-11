@@ -1,15 +1,10 @@
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(22)
-    }
-}
-
 tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("--enable-preview")
     options.compilerArgs.add("-Xlint:preview")
 }
 
 tasks.withType<Test>().configureEach {
-    jvmArgs("--enable-native-access=ALL-UNNAMED")
+    jvmArgs("--enable-preview", "--enable-native-access=ALL-UNNAMED")
 }
 
 tasks.named<JacocoReport>("jacocoTestReport") {
