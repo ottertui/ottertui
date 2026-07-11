@@ -3,7 +3,6 @@ name: CI
 on:
   push:
     branches: [main]
-
   pull_request:
     branches: [main]
 
@@ -13,10 +12,13 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: JDK ${{ matrix.java }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        java: [21]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        java: [21, 23]
 
     steps:
       - uses: actions/checkout@v7
@@ -30,17 +32,17 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Checkstyle
-        run: ./gradlew checkstyleMain checkstyleTest
+      - name: Check, Test & Coverage
+        run: ./gradlew check jacocoTestReport
 
-      - name: Test & JaCoCo Report
-        run: ./gradlew test jacocoTestReport
+      - name: Build javadoc
+        run: ./gradlew javadoc
 
       - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.java == 21
         uses: codecov/codecov-action@v7
         with:
           files: '**/build/reports/jacoco/test/jacocoTestReport.xml'
           flags: unittests
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-

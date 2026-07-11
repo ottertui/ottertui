@@ -1,0 +1,49 @@
+# Auto-label PRs based on changed files
+
+core:
+  - changed-files:
+      - any-glob-to-any-file: 'ottertui-core/**'
+
+widgets:
+  - changed-files:
+      - any-glob-to-any-file: 'ottertui-widgets/**'
+
+tui:
+  - changed-files:
+      - any-glob-to-any-file: 'ottertui-tui/**'
+
+toolkit:
+  - changed-files:
+      - any-glob-to-any-file: 'ottertui-toolkit/**'
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'ottertui-backend-jline/**'
+          - 'ottertui-backend-lanterna/**'
+          - 'ottertui-backend-aesh/**'
+          - 'ottertui-backend-ffm/**'
+
+examples:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'ottertui-examples/**'
+          - 'ottertui-integration-tests/**'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+          - '.githooks/**'
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - '**/*.md'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'gradle/libs.versions.toml'
+          - 'gradle/wrapper/**'

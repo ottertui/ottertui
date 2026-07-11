@@ -1,0 +1,55 @@
+name: Auto Assign & Notify
+
+on:
+  pull_request_target:
+    types: [opened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  assign-and-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Auto-assign PR author
+        uses: toshimaru/auto-author-assign@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Request review from active committers
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          AUTHOR="${{ github.event.pull_request.user.login }}"
+          BASE="origin/${{ github.event.pull_request.base.ref }}"
+
+          # Find recent contributors to changed files (exclude the PR author)
+          reviewers=$(
+            git diff --name-only "$BASE...HEAD" | while read -r file; do
+              git log --since="90 days ago" --follow --format="%an" -- "$file"
+            done \
+            | sort | uniq -c | sort -rn \
+            | awk '{print $2}' \
+            | grep -Fxv "$AUTHOR" \
+            | grep -Fxv "github-actions[bot]" \
+            | head -3
+          )
+
+          if [ -z "$reviewers" ]; then
+            echo "No active committers found for changed files"
+            exit 0
+          fi
+
+          echo "Requesting review from:"
+          echo "$reviewers"
+
+          reviewers_csv=$(echo "$reviewers" | paste -sd, -)
+          gh pr edit "$PR_NUMBER" --add-reviewer "$reviewers_csv"
