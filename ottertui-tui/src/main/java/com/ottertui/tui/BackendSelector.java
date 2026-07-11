@@ -25,7 +25,7 @@ public class BackendSelector {
         if ("ffm".equals(backend)) {
             try {
                 return createFfm();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new RuntimeException("FFM backend requested but unavailable", e);
             }
         }
