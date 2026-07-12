@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'Release version (e.g. 0.1.0)'
+        description: 'Release version (e.g. v0.1.0)'
         required: true
       next_dev_version:
-        description: 'Next snapshot version (e.g. 0.2.0-SNAPSHOT)'
+        description: 'Next snapshot version (e.g. v0.2.0-SNAPSHOT)'
         required: true
 
 permissions:
@@ -32,19 +32,19 @@ jobs:
 
       - name: Validate version format
         run: |
-          echo "${{ inputs.release_version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' || {
-            echo "Error: release_version must be semver (e.g. 0.1.0)"
+          echo "${{ inputs.release_version }}" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$' || {
+            echo "Error: release_version must be v-prefixed semver (e.g. v0.1.0)"
             exit 1
           }
-          echo "${{ inputs.next_dev_version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-SNAPSHOT$' || {
-            echo "Error: next_dev_version must be snapshot (e.g. 0.2.0-SNAPSHOT)"
+          echo "${{ inputs.next_dev_version }}" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+-SNAPSHOT$' || {
+            echo "Error: next_dev_version must be v-prefixed snapshot (e.g. v0.2.0-SNAPSHOT)"
             exit 1
           }
 
       - name: Check tag does not already exist
         run: |
-          if git rev-parse "v${{ inputs.release_version }}" >/dev/null 2>&1; then
-            echo "Error: tag v${{ inputs.release_version }} already exists"
+          if git rev-parse "${{ inputs.release_version }}" >/dev/null 2>&1; then
+            echo "Error: tag ${{ inputs.release_version }} already exists"
             exit 1
           fi
 
@@ -59,8 +59,10 @@ jobs:
 
       - name: Set release version
         run: |
-          sed -i "s/version = .*/version = \"${{ inputs.release_version }}\"/" build.gradle.kts
-          grep -qF "version = \"${{ inputs.release_version }}\"" build.gradle.kts || {
+          RELEASE_VERSION="${{ inputs.release_version }}"
+          PLAIN_VERSION="${RELEASE_VERSION#v}"
+          sed -i "s/version = .*/version = \"${PLAIN_VERSION}\"/" build.gradle.kts
+          grep -qF "version = \"${PLAIN_VERSION}\"" build.gradle.kts || {
             echo "Error: failed to set version in build.gradle.kts"
             exit 1
           }
@@ -85,8 +87,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: v${{ inputs.release_version }}
-          name: v${{ inputs.release_version }}
+          tag_name: ${{ inputs.release_version }}
+          name: ${{ inputs.release_version }}
           generate_release_notes: true
           files: |
             **/build/libs/*.jar
@@ -94,8 +96,10 @@ jobs:
 
       - name: Bump to next snapshot
         run: |
-          sed -i "s/version = .*/version = \"${{ inputs.next_dev_version }}\"/" build.gradle.kts
-          grep -qF "version = \"${{ inputs.next_dev_version }}\"" build.gradle.kts || {
+          NEXT_VERSION="${{ inputs.next_dev_version }}"
+          PLAIN_NEXT="${NEXT_VERSION#v}"
+          sed -i "s/version = .*/version = \"${PLAIN_NEXT}\"/" build.gradle.kts
+          grep -qF "version = \"${PLAIN_NEXT}\"" build.gradle.kts || {
             echo "Error: failed to set next snapshot version"
             exit 1
           }
