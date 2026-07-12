@@ -41,7 +41,8 @@ ottertui/
 ├── ottertui-backend-aesh   ← Aesh 백엔드 (무의존성, SSH/Telnet 내장)
 ├── ottertui-backend-lanterna ← Lanterna 백엔드 (JDK 8+ 호환)
 ├── ottertui-backend-ffm    ← FFM API 백엔드 (JDK 22+, 직접 POSIX 시스템 콜)
-└── ottertui-examples       ← 데모 애플리케이션
+├── ottertui-examples       ← 데모 애플리케이션
+└── ottertui-integration-tests ← 크로스 모듈 통합 테스트
 ```
 
 ## 빠른 시작
@@ -183,6 +184,10 @@ var backend = new FfmBackend();  // JDK 22+, --enable-native-access=ALL-UNNAMED
 | Aesh | 8+ | 없음 | 무의존성, SSH/Telnet 내장 |
 | Lanterna | 8+ | Lanterna | 구버전 JDK와 호환 |
 | FFM | 22+ | Jansi | 직접 POSIX 시스템 콜, 최소 오버헤드 |
+
+## 기여하기
+
+기여를 환영합니다. 개발 환경 설정, 코드 스타일 가이드, 풀 리퀘스트 프로세스는 [CONTRIBUTING.md](../CONTRIBUTING.md)를 참조하세요.
 
 ## 라이선스
 

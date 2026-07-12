@@ -41,7 +41,8 @@ ottertui/
 ├── ottertui-backend-aesh   ← Aesh backend (zero-dependency, SSH/Telnet built-in)
 ├── ottertui-backend-lanterna ← Lanterna backend (JDK 8+ compatible)
 ├── ottertui-backend-ffm    ← FFM API backend (JDK 22+, direct POSIX syscalls)
-└── ottertui-examples       ← Demo applications
+├── ottertui-examples       ← Demo applications
+└── ottertui-integration-tests ← Cross-module integration tests
 ```
 
 ## Quick Start
@@ -183,6 +184,10 @@ var backend = new FfmBackend();  // JDK 22+, --enable-native-access=ALL-UNNAMED
 | Aesh | 8+ | none | Zero-dependency, SSH/Telnet built-in |
 | Lanterna | 8+ | Lanterna | Compatible with older JDKs |
 | FFM | 22+ | Jansi | Direct POSIX syscalls, minimal overhead |
+
+## Contributing
+
+Contributions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup instructions, code style guidelines, and the pull request process.
 
 ## License
 

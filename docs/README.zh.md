@@ -41,7 +41,8 @@ ottertui/
 ├── ottertui-backend-aesh   ← Aesh 后端（零依赖，内置 SSH/Telnet）
 ├── ottertui-backend-lanterna ← Lanterna 后端（兼容 JDK 8+）
 ├── ottertui-backend-ffm    ← FFM API 后端（JDK 22+，直接 POSIX 系统调用）
-└── ottertui-examples       ← 示例应用
+├── ottertui-examples       ← 示例应用
+└── ottertui-integration-tests ← 跨模块集成测试
 ```
 
 ## 快速开始
@@ -183,6 +184,10 @@ var backend = new FfmBackend();  // JDK 22+, --enable-native-access=ALL-UNNAMED
 | Aesh | 8+ | 无 | 零依赖，内置 SSH/Telnet |
 | Lanterna | 8+ | Lanterna | 兼容旧版本 JDK |
 | FFM | 22+ | Jansi | 直接 POSIX 系统调用，开销极小 |
+
+## 贡献指南
+
+欢迎贡献。请参阅 [CONTRIBUTING.md](../CONTRIBUTING.md) 了解开发环境搭建、代码规范和 Pull Request 流程。
 
 ## 许可证
 

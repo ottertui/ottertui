@@ -41,7 +41,8 @@ ottertui/
 ├── ottertui-backend-aesh   ← Aesh バックエンド（ゼロ依存、SSH/Telnet 内蔵）
 ├── ottertui-backend-lanterna ← Lanterna バックエンド（JDK 8+ 互換）
 ├── ottertui-backend-ffm    ← FFM API バックエンド（JDK 22+、直接 POSIX システムコール）
-└── ottertui-examples       ← デモアプリケーション
+├── ottertui-examples       ← デモアプリケーション
+└── ottertui-integration-tests ← クロスモジュール統合テスト
 ```
 
 ## クイックスタート
@@ -183,6 +184,10 @@ var backend = new FfmBackend();  // JDK 22+, --enable-native-access=ALL-UNNAMED
 | Aesh | 8+ | なし | ゼロ依存、SSH/Telnet 内蔵 |
 | Lanterna | 8+ | Lanterna | 古い JDK と互換 |
 | FFM | 22+ | Jansi | 直接 POSIX システムコール、最小オーバーヘッド |
+
+## コントリビューション
+
+貢献を歓迎します。セットアップ手順、コードスタイルガイド、プルリクエストのプロセスについては [CONTRIBUTING.md](../CONTRIBUTING.md) をご覧ください。
 
 ## ライセンス
 
