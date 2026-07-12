@@ -64,8 +64,8 @@ publishing {
 
     repositories {
         maven {
-            name = "CentralPortal"
-            url = uri("https://central.sonatype.com/api/v1/publisher")
+            name = "MavenCentral"
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
                 username = findProperty("sonatypeUsername") as String? ?: ""
                 password = findProperty("sonatypePassword") as String? ?: ""
