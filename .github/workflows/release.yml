@@ -1,7 +1,6 @@
 name: Release
 
-# Apache-style: manual trigger only, not automatic on tag push.
-# The release manager triggers this after a successful PMC vote.
+# Manual trigger — the release manager triggers this to publish to Maven Central.
 
 on:
   workflow_dispatch:
@@ -23,6 +22,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Ensure on main branch
+        run: |
+          if [ "${{ github.ref_name }}" != "main" ]; then
+            echo "Error: releases must be triggered from the main branch, not '${{ github.ref_name }}'"
+            exit 1
+          fi
 
       - name: Validate version format
         run: |
