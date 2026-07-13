@@ -2,6 +2,9 @@ plugins {
     id("ottertui.java-conventions")
 }
 
+tasks.withType<PublishToMavenRepository>().configureEach { enabled = false }
+tasks.withType<PublishToMavenLocal>().configureEach { enabled = false }
+
 dependencies {
     testImplementation(project(":ottertui-core"))
     testImplementation(project(":ottertui-widgets"))

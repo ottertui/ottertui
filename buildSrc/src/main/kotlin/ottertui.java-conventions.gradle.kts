@@ -8,8 +8,16 @@ plugins {
 java {
     // Toolchain intentionally unspecified — uses the current JVM.
     // The FFM backend module guards itself on JDK < 22.
-    withSourcesJar()
-    withJavadocJar()
+}
+
+val sourcesJar = tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
+}
+
+val javadocJar = tasks.register<Jar>("javadocJar") {
+    archiveClassifier.set("javadoc")
+    from(tasks.javadoc)
 }
 
 checkstyle {
@@ -44,8 +52,8 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
-            artifact(tasks.named("sourcesJar"))
-            artifact(tasks.named("javadocJar"))
+            artifact(sourcesJar)
+            artifact(javadocJar)
             pom {
                 name = "ottertui-${project.name}"
                 description = "OtterTUI - A modern Java terminal UI library"
