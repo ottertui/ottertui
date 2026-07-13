@@ -8,6 +8,8 @@ plugins {
 java {
     // Toolchain intentionally unspecified — uses the current JVM.
     // The FFM backend module guards itself on JDK < 22.
+    withSourcesJar()
+    withJavadocJar()
 }
 
 checkstyle {
@@ -25,6 +27,10 @@ tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-Xlint:unchecked")
 }
 
+tasks.withType<Javadoc>().configureEach {
+    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:-missing", "-quiet")
+}
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     testLogging.showStandardStreams = true
@@ -38,6 +44,8 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            artifact(tasks.named("sourcesJar"))
+            artifact(tasks.named("javadocJar"))
             pom {
                 name = "ottertui-${project.name}"
                 description = "OtterTUI - A modern Java terminal UI library"
